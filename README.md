@@ -12,13 +12,17 @@ The primary purpose of START is:
 > **Capture incoming leads and help the business respond before those leads are lost.**
 
 ### $97/Month Scope:
+- **Client Operations Dashboard**: Real-time morning-to-night hub displaying New Leads count, Today's Appointments count, Booked Value (Today & This Week), Today's operational appointments list, and recent inquiries with 1-click Call/Text actions.
+- **Appointments Management**: Internal appointment scheduling, service name snapshotting for historical integrity, one-off price overrides, and full lifecycle tracking (`SCHEDULED`, `COMPLETED`, `CANCELED`, `NO_SHOW`).
+- **Direct Lead Conversion**: One-click "Book Appointment" modal on leads that pre-fills customer information and automatically transitions `NEW` leads to `CONTACTED`.
 - **Public Website Lead Intake**: Secure, abuse-protected REST endpoint (`POST /api/leads`) accepting inquiries from the client's marketing site.
 - **Real-Time Owner Notifications**: Immediate SMS dispatch to the owner's phone when a new website lead arrives. Notification failures are isolated and never drop or reject a lead.
-- **Lead Inbox**: Fast, mobile-first dashboard prioritizing actionable new inquiries with direct `tel:`, `sms:`, and `mailto:` triggers.
+- **Lead Inbox**: Fast, mobile-first inbox prioritizing actionable new inquiries with direct `tel:` and `sms:` triggers.
 - **Lead Lifecycle State Machine**: Controlled transitions (`NEW` → `CONTACTED` → `CLOSED`, with `CLOSED` → `CONTACTED` reopening support) with timestamp tracking.
 - **Missed-Call Recovery**: Twilio voice webhook forwarding calls to the business owner, analyzing the child leg's `DialCallStatus` outcome. If unanswered, busy, or failed, it automatically sends a recovery text-back and creates a `MISSED_CALL` lead.
 - **Services Catalog**: Owner management of business services with prices stored in integer cents. Historical relationships are preserved when services are deactivated.
 - **Business Profile**: Centralized configuration of business name, phones, timezone, and auto-text templates.
+
 
 ---
 
@@ -150,12 +154,14 @@ Run the test suite:
 ```bash
 npm test
 ```
-The suite executes 28 tests across 5 test suites:
-- `tests/auth.test.ts`: Password hashing, token signing, session verification, tampered token rejection.
+The suite executes 43 tests across 7 test suites:
+- `tests/dashboard.test.ts`: Timezone date range math, booked value metrics, exclusion of canceled/no-show, today's operational list rules.
+- `tests/appointments.test.ts`: Lead conversion, service snapshotting, price override, lifecycle transitions (`SCHEDULED`, `COMPLETED`, `CANCELED`, `NO_SHOW`).
 - `tests/leads.test.ts`: Public lead intake, input validation, state machine transitions, timestamp tracking, repeated submission separation.
+- `tests/missed-call.test.ts`: Answered forwarded calls (no SMS), unanswered forwarded calls (SMS sent), busy/failed calls, `CallSid` deduplication, and open lead association.
 - `tests/services.test.ts`: Service creation, editing, active/inactive filtering, historical lead foreign-key preservation.
 - `tests/notifications.test.ts`: Real-time owner notifications and fault-isolation (leads persist even if SMS fails).
-- `tests/missed-call.test.ts`: Answered forwarded calls (no SMS), unanswered forwarded calls (SMS sent), busy/failed calls, `CallSid` deduplication, and open lead association.
+- `tests/auth.test.ts`: Password hashing, token signing, session verification, tampered token rejection.
 
 Run linter:
 ```bash
@@ -169,18 +175,19 @@ npm run build
 
 ---
 
-## 8. Functionality Intentionally Excluded in START V1
+## 8. Functionality Intentionally Excluded in START V1 (Reserved for GROW Tier)
 
-START V1 is laser-focused on lead capture and response speed. The following higher-tier features are **strictly excluded**:
-- Multi-tenancy / tenant switching / Master Admin
-- Appointment scheduling & booking calendar
-- Automated booking confirmations & reminders
-- Review requests & review gating
+START V1 is laser-focused on lead capture, response speed, and day-to-day operations. The following higher-tier features are **strictly excluded**:
+- Multi-tenancy / tenant switching / Master Admin cross-client dashboards
+- Public customer self-booking widgets
+- Google / Outlook two-way calendar synchronization
+- Automated booking confirmations & reminder SMS sequences
+- Automated review requests & review gating
 - Internal two-way SMS chat threads
 - Mass texting & email marketing campaigns
-- Payments & invoicing
-- AI agents / bots
-- Workflow / automation visual builders
+- Online payments, deposits & invoicing
+- AI conversational agents / bots
+- Visual workflow / automation builders
 - Employee / staff sub-accounts
 - Database-driven client-facing feature toggles
 
