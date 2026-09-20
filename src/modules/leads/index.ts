@@ -214,6 +214,19 @@ export async function listLeads(filterStatus?: "all" | "new" | "contacted" | "cl
           defaultPriceCents: true,
         },
       },
+      appointments: {
+        select: {
+          id: true,
+          scheduledAt: true,
+          durationMinutes: true,
+          valueCents: true,
+          status: true,
+          serviceName: true,
+        },
+        orderBy: {
+          scheduledAt: "desc",
+        },
+      },
     },
     orderBy: [
       // NEW leads first, then by createdAt desc
@@ -227,6 +240,20 @@ export async function getLeadById(id: string) {
     where: { id },
     include: {
       service: true,
+      appointments: {
+        select: {
+          id: true,
+          scheduledAt: true,
+          durationMinutes: true,
+          valueCents: true,
+          status: true,
+          serviceName: true,
+          notes: true,
+        },
+        orderBy: {
+          scheduledAt: "desc",
+        },
+      },
     },
   });
 }

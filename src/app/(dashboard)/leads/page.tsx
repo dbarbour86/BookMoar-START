@@ -17,6 +17,7 @@ import {
   RefreshCw,
   X,
   CalendarPlus,
+  CalendarCheck2,
 } from "lucide-react";
 import BookAppointmentModal, { BookAppointmentModalProps } from "@/components/BookAppointmentModal";
 
@@ -38,6 +39,12 @@ interface LeadItem {
   contactedAt?: string | null;
   closedAt?: string | null;
   service?: ServiceInfo | null;
+  appointments?: Array<{
+    id: string;
+    scheduledAt: string;
+    status: "SCHEDULED" | "COMPLETED" | "CANCELED" | "NO_SHOW";
+    serviceName?: string | null;
+  }>;
 }
 
 export default function LeadsInboxPage() {
@@ -229,11 +236,17 @@ export default function LeadsInboxPage() {
       ) : leads.length === 0 ? (
         <div className="text-center py-16 px-4 bg-white rounded-2xl border border-dashed border-slate-300">
           <Filter className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-          <h3 className="text-base font-bold text-slate-700">No leads found</h3>
-          <p className="text-sm text-slate-500 max-w-sm mx-auto mt-1">
-            {statusFilter === "all"
-              ? "No leads received yet. Submit a test lead to see it arrive in real time."
+          <h3 className="text-base font-bold text-slate-700">
+            {statusFilter === "new"
+              ? "You're caught up — no new leads need attention."
+              : statusFilter === "all"
+              ? "No leads received yet."
               : `No leads currently in the "${statusFilter}" status.`}
+          </h3>
+          <p className="text-sm text-slate-500 max-w-sm mx-auto mt-1">
+            {statusFilter === "new"
+              ? "Incoming website forms, manual entries, and missed calls will appear here."
+              : "Check another filter or create a lead manually."}
           </p>
           <div className="mt-4">
             <Link
@@ -249,6 +262,9 @@ export default function LeadsInboxPage() {
         <div className="space-y-3">
           {leads.map((lead) => {
             const isNew = lead.status === "NEW";
+            const isContacted = lead.status === "CONTACTED";
+            const isClosed = lead.status === "CLOSED";
+            const activeAppt = lead.appointments?.find((a) => a.status === "SCHEDULED");
 
             return (
               <div
@@ -256,21 +272,23 @@ export default function LeadsInboxPage() {
                 className={`relative rounded-2xl p-4 sm:p-5 transition shadow-sm border ${
                   isNew
                     ? "bg-white border-blue-400 ring-2 ring-blue-500/20 shadow-blue-500/5"
+                    : isClosed
+                    ? "bg-slate-50/75 border-slate-200 text-slate-600 opacity-80 hover:opacity-100"
                     : "bg-white border-slate-200/90 hover:border-slate-300"
                 }`}
               >
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                  <div className="space-y-1.5 flex-1">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3.5">
+                  <div className="space-y-1.5 flex-1 min-w-0">
                     {/* Badges line */}
                     <div className="flex flex-wrap items-center gap-2 text-xs">
                       {/* Status Badge */}
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider text-[11px] ${
-                          lead.status === "NEW"
+                          isNew
                             ? "bg-blue-600 text-white"
-                            : lead.status === "CONTACTED"
+                            : isContacted
                             ? "bg-amber-100 text-amber-800 border border-amber-300"
-                            : "bg-slate-100 text-slate-600 border border-slate-200"
+                            : "bg-slate-200 text-slate-700 border border-slate-300"
                         }`}
                       >
                         {lead.status}
@@ -295,7 +313,11 @@ export default function LeadsInboxPage() {
                     <div className="flex flex-wrap items-baseline gap-x-3">
                       <Link
                         href={`/leads/${lead.id}`}
-                        className="text-lg font-bold text-slate-900 hover:text-blue-600 transition"
+                        className={`text-lg font-bold transition truncate ${
+                          isClosed
+                            ? "text-slate-700 hover:text-blue-600"
+                            : "text-slate-900 hover:text-blue-600"
+                        }`}
                       >
                         {lead.name}
                       </Link>
@@ -309,7 +331,7 @@ export default function LeadsInboxPage() {
                       <div className="text-xs font-semibold text-blue-700 bg-blue-50/80 inline-block px-2.5 py-1 rounded-lg border border-blue-100">
                         Service: {lead.service.name}
                         {lead.service.defaultPriceCents !== null && lead.service.defaultPriceCents !== undefined && (
-                          <span className="text-blue-900 ml-1">
+                          <span className="text-blue-900 ml-1 font-bold">
                             (${lead.service.defaultPriceCents / 100})
                           </span>
                         )}
@@ -319,80 +341,112 @@ export default function LeadsInboxPage() {
                     {/* Message Preview */}
                     {lead.message && (
                       <p className="text-sm text-slate-600 line-clamp-2 leading-relaxed bg-slate-50/70 p-2.5 rounded-xl border border-slate-100 mt-1">
-                        {lead.message}
+                        &quot;{lead.message}&quot;
                       </p>
                     )}
                   </div>
 
-                  {/* Actions Column */}
-                  <div className="flex flex-wrap sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                    {/* Device Communication Links */}
-                    <div className="flex items-center gap-1.5">
-                      <a
-                        href={`tel:${lead.phone}`}
-                        title="Call Customer"
-                        className="flex items-center justify-center h-10 w-10 sm:h-9 sm:w-9 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-600 hover:text-white transition shadow-sm"
-                      >
-                        <Phone className="w-4 h-4" />
-                      </a>
-                      <a
-                        href={`sms:${lead.phone}`}
-                        title="Text Customer"
-                        className="flex items-center justify-center h-10 w-10 sm:h-9 sm:w-9 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-600 hover:text-white transition shadow-sm"
-                      >
-                        <MessageSquare className="w-4 h-4" />
-                      </a>
-                      <Link
-                        href={`/leads/${lead.id}`}
-                        className="text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-2 sm:py-1.5 rounded-xl border border-slate-200 transition"
-                      >
-                        View
-                      </Link>
-                    </div>
-
-                    {/* Lifecycle Transitions & Book Appt */}
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <button
-                        onClick={() =>
-                          setBookingModalState({
-                            isOpen: true,
-                            initialData: {
-                              leadId: lead.id,
-                              customerName: lead.name,
-                              customerPhone: lead.phone,
-                              customerEmail: lead.email,
-                              serviceId: lead.service?.id,
-                              defaultPriceCents: lead.service?.defaultPriceCents,
-                              notes: lead.message,
-                            },
-                          })
-                        }
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-sm shadow-blue-600/20 transition active:scale-95"
-                      >
-                        <CalendarPlus className="w-3.5 h-3.5" />
-                        <span>Book Appt</span>
-                      </button>
-
-                      {lead.status === "NEW" && (
+                  {/* Actions Column: Strict 3-Tier Hierarchy */}
+                  <div className="flex flex-wrap sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2.5 pt-2.5 sm:pt-0 border-t sm:border-t-0 border-slate-100 shrink-0">
+                    {/* CLOSED leads: recedes with clean Reopen and View Details */}
+                    {isClosed ? (
+                      <div className="flex items-center gap-2">
                         <button
                           onClick={(e) => handleStatusTransition(lead.id, "CONTACTED", e)}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-300 hover:bg-amber-100 transition shadow-sm"
+                          className="px-3.5 py-2 rounded-xl text-xs font-bold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 transition shadow-sm"
                         >
-                          <CheckCircle2 className="w-3.5 h-3.5 text-amber-600" />
-                          <span>Contacted</span>
+                          Reopen Lead
                         </button>
-                      )}
+                        <Link
+                          href={`/leads/${lead.id}`}
+                          className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-800 transition"
+                        >
+                          Details
+                        </Link>
+                      </div>
+                    ) : (
+                      <>
+                        {/* Primary Action Row: Call | Text | Book Appt / Appt Scheduled */}
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={`tel:${lead.phone}`}
+                            aria-label={`Call ${lead.name}`}
+                            title="Call Customer"
+                            className="flex items-center justify-center h-10 w-10 sm:h-9 sm:w-9 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-600 hover:text-white transition shadow-sm"
+                          >
+                            <Phone className="w-4 h-4" />
+                          </a>
+                          <a
+                            href={`sms:${lead.phone}`}
+                            aria-label={`Text ${lead.name}`}
+                            title="Text Customer"
+                            className="flex items-center justify-center h-10 w-10 sm:h-9 sm:w-9 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-600 hover:text-white transition shadow-sm"
+                          >
+                            <MessageSquare className="w-4 h-4" />
+                          </a>
 
-                      {lead.status !== "CLOSED" && (
-                        <button
-                          onClick={(e) => handleStatusTransition(lead.id, "CLOSED", e)}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-300 hover:bg-slate-200 transition"
-                        >
-                          <XCircle className="w-3.5 h-3.5 text-slate-500" />
-                          <span>Close</span>
-                        </button>
-                      )}
-                    </div>
+                          {/* Primary Conversion CTA */}
+                          {activeAppt ? (
+                            <Link
+                              href="/appointments"
+                              className="flex items-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-xl text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200 hover:bg-blue-100 transition shadow-sm"
+                            >
+                              <CalendarCheck2 className="w-3.5 h-3.5 text-blue-600" />
+                              <span>Appt Scheduled</span>
+                            </Link>
+                          ) : (
+                            <button
+                              onClick={() =>
+                                setBookingModalState({
+                                  isOpen: true,
+                                  initialData: {
+                                    leadId: lead.id,
+                                    customerName: lead.name,
+                                    customerPhone: lead.phone,
+                                    customerEmail: lead.email,
+                                    serviceId: lead.service?.id,
+                                    defaultPriceCents: lead.service?.defaultPriceCents,
+                                    notes: lead.message,
+                                  },
+                                })
+                              }
+                              className="flex items-center gap-1.5 px-3.5 py-2 sm:py-1.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-600/20 transition active:scale-95"
+                            >
+                              <CalendarPlus className="w-3.5 h-3.5" />
+                              <span>Book Appt</span>
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Secondary Actions: quiet textual links */}
+                        <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+                          {isNew && (
+                            <>
+                              <button
+                                onClick={(e) => handleStatusTransition(lead.id, "CONTACTED", e)}
+                                className="hover:text-amber-700 hover:underline transition"
+                              >
+                                Mark Contacted
+                              </button>
+                              <span className="text-slate-300">•</span>
+                            </>
+                          )}
+                          <button
+                            onClick={(e) => handleStatusTransition(lead.id, "CLOSED", e)}
+                            className="hover:text-slate-800 hover:underline transition"
+                          >
+                            Close Lead
+                          </button>
+                          <span className="text-slate-300">•</span>
+                          <Link
+                            href={`/leads/${lead.id}`}
+                            className="text-slate-600 hover:text-blue-600 hover:underline transition font-semibold"
+                          >
+                            Details
+                          </Link>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

@@ -141,17 +141,18 @@ export default function BookAppointmentModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 relative my-8 animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
+      <div className="bg-white rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-slate-200 relative my-auto max-h-[92vh] flex flex-col animate-in fade-in zoom-in-95 duration-150">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+          aria-label="Close booking modal"
+          className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center gap-2 mb-1">
-          <div className="p-2 rounded-xl bg-blue-100 text-blue-700">
+        <div className="flex items-center gap-2.5 mb-1 shrink-0">
+          <div className="p-2.5 rounded-xl bg-blue-100 text-blue-700">
             <Calendar className="w-5 h-5" />
           </div>
           <div>
@@ -164,13 +165,20 @@ export default function BookAppointmentModal({
           </div>
         </div>
 
+        {initialData?.leadId && (
+          <div className="mt-2.5 px-3 py-1.5 rounded-xl bg-blue-50 border border-blue-200/80 text-xs font-semibold text-blue-800 flex items-center gap-2 shrink-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+            <span>Connected to incoming lead • Pre-filled information</span>
+          </div>
+        )}
+
         {error && (
-          <div className="mt-3 p-3 rounded-xl bg-red-50 border border-red-200 text-xs font-semibold text-red-800">
+          <div className="mt-3 p-3 rounded-xl bg-red-50 border border-red-200 text-xs font-semibold text-red-800 shrink-0">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="mt-4 space-y-3.5">
+        <form onSubmit={handleSubmit} className="mt-4 space-y-3.5 overflow-y-auto pr-1">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">

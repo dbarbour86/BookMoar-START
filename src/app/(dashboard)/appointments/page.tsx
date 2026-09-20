@@ -220,11 +220,17 @@ export default function AppointmentsPage() {
       ) : appointments.length === 0 ? (
         <div className="text-center py-16 px-4 bg-white rounded-2xl border border-dashed border-slate-300">
           <Calendar className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-          <h3 className="text-base font-bold text-slate-700">No appointments found</h3>
+          <h3 className="text-base font-bold text-slate-700">
+            {filter === "upcoming"
+              ? "No upcoming appointments scheduled."
+              : filter === "all"
+              ? "No appointments yet."
+              : `No appointments currently under "${filter.replace("_", " ")}".`}
+          </h3>
           <p className="text-sm text-slate-500 max-w-sm mx-auto mt-1">
             {filter === "upcoming"
-              ? "No upcoming appointments scheduled. Click 'Add Appointment' or convert an incoming lead."
-              : `No appointments currently under "${filter.replace("_", " ")}".`}
+              ? "Book a lead from the Leads inbox or click 'Add Appointment' above."
+              : "Check another filter or schedule a new appointment."}
           </p>
         </div>
       ) : (
@@ -312,56 +318,115 @@ export default function AppointmentsPage() {
                     )}
                   </div>
 
-                  {/* Actions Right */}
-                  <div className="flex flex-wrap sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                    {/* Communication */}
-                    <div className="flex items-center gap-1.5">
-                      <a
-                        href={`tel:${appt.customerPhone}`}
-                        title="Call Customer"
-                        className="p-2 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white transition shadow-sm border border-emerald-200"
-                      >
-                        <Phone className="w-4 h-4" />
-                      </a>
-                      <a
-                        href={`sms:${appt.customerPhone}`}
-                        title="Text Customer"
-                        className="p-2 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white transition shadow-sm border border-blue-200"
-                      >
-                        <MessageSquare className="w-4 h-4" />
-                      </a>
+                  {/* Actions Right: Exact User-Specified State-Dependent Action Matrix */}
+                  <div className="flex flex-wrap sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100 shrink-0">
+                    {/* SCHEDULED: Call | Text | Edit | Complete | No Show | Cancel */}
+                    {isScheduled && (
+                      <>
+                        <div className="flex items-center gap-1.5">
+                          <a
+                            href={`tel:${appt.customerPhone}`}
+                            aria-label={`Call ${appt.customerName}`}
+                            title="Call Customer"
+                            className="flex items-center justify-center h-9 w-9 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white transition shadow-sm border border-emerald-200"
+                          >
+                            <Phone className="w-4 h-4" />
+                          </a>
+                          <a
+                            href={`sms:${appt.customerPhone}`}
+                            aria-label={`Text ${appt.customerName}`}
+                            title="Text Customer"
+                            className="flex items-center justify-center h-9 w-9 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white transition shadow-sm border border-blue-200"
+                          >
+                            <MessageSquare className="w-4 h-4" />
+                          </a>
+                          <button
+                            onClick={() => openEditModal(appt)}
+                            title="Edit Appointment"
+                            aria-label={`Edit appointment for ${appt.customerName}`}
+                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition border border-slate-200 text-xs font-semibold"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                            <span>Edit</span>
+                          </button>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 pt-1">
+                          <button
+                            onClick={() => handleStatusChange(appt.id, "COMPLETED")}
+                            className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition shadow-sm"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span>Complete</span>
+                          </button>
+                          <button
+                            onClick={() => handleStatusChange(appt.id, "NO_SHOW")}
+                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
+                          >
+                            <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+                            <span>No Show</span>
+                          </button>
+                          <button
+                            onClick={() => handleStatusChange(appt.id, "CANCELED")}
+                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-500 transition"
+                          >
+                            <XCircle className="w-3.5 h-3.5" />
+                            <span>Cancel</span>
+                          </button>
+                        </div>
+                      </>
+                    )}
+
+                    {/* COMPLETED: View / Edit only */}
+                    {isCompleted && (
                       <button
                         onClick={() => openEditModal(appt)}
-                        title="Edit Appointment"
-                        className="p-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition border border-slate-200"
+                        aria-label={`View or edit completed appointment for ${appt.customerName}`}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition border border-slate-200"
                       >
-                        <Edit2 className="w-4 h-4" />
+                        <Edit2 className="w-3.5 h-3.5 text-slate-500" />
+                        <span>View / Edit</span>
                       </button>
-                    </div>
+                    )}
 
-                    {/* Lifecycle Outcome Buttons */}
-                    {isScheduled && (
-                      <div className="flex items-center gap-1.5 pt-1">
-                        <button
-                          onClick={() => handleStatusChange(appt.id, "COMPLETED")}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition shadow-sm"
+                    {/* CANCELED: View / Edit only */}
+                    {isCanceled && (
+                      <button
+                        onClick={() => openEditModal(appt)}
+                        aria-label={`View or edit canceled appointment for ${appt.customerName}`}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition border border-slate-200"
+                      >
+                        <Edit2 className="w-3.5 h-3.5 text-slate-400" />
+                        <span>View / Edit</span>
+                      </button>
+                    )}
+
+                    {/* NO_SHOW: Call | Text | View / Edit */}
+                    {isNoShow && (
+                      <div className="flex items-center gap-1.5">
+                        <a
+                          href={`tel:${appt.customerPhone}`}
+                          aria-label={`Call ${appt.customerName}`}
+                          title="Call Customer"
+                          className="flex items-center justify-center h-9 w-9 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white transition shadow-sm border border-emerald-200"
                         >
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                          <span>Complete</span>
-                        </button>
-                        <button
-                          onClick={() => handleStatusChange(appt.id, "NO_SHOW")}
-                          className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
+                          <Phone className="w-4 h-4" />
+                        </a>
+                        <a
+                          href={`sms:${appt.customerPhone}`}
+                          aria-label={`Text ${appt.customerName}`}
+                          title="Text Customer"
+                          className="flex items-center justify-center h-9 w-9 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white transition shadow-sm border border-blue-200"
                         >
-                          <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
-                          <span>No Show</span>
-                        </button>
+                          <MessageSquare className="w-4 h-4" />
+                        </a>
                         <button
-                          onClick={() => handleStatusChange(appt.id, "CANCELED")}
-                          className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-500 transition"
+                          onClick={() => openEditModal(appt)}
+                          aria-label={`View or edit no-show appointment for ${appt.customerName}`}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition border border-slate-200"
                         >
-                          <XCircle className="w-3.5 h-3.5" />
-                          <span>Cancel</span>
+                          <Edit2 className="w-3.5 h-3.5 text-slate-500" />
+                          <span>View / Edit</span>
                         </button>
                       </div>
                     )}

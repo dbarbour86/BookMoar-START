@@ -19,6 +19,7 @@ import {
   Calendar,
   AlertCircle,
   CalendarPlus,
+  CalendarCheck2,
 } from "lucide-react";
 import BookAppointmentModal from "@/components/BookAppointmentModal";
 
@@ -41,6 +42,15 @@ interface LeadDetailData {
     description?: string | null;
     defaultPriceCents?: number | null;
   } | null;
+  appointments?: Array<{
+    id: string;
+    scheduledAt: string;
+    durationMinutes: number;
+    valueCents?: number | null;
+    status: "SCHEDULED" | "COMPLETED" | "CANCELED" | "NO_SHOW";
+    serviceName?: string | null;
+    notes?: string | null;
+  }>;
 }
 
 export default function LeadDetailPage() {
@@ -182,10 +192,11 @@ export default function LeadDetailPage() {
           )}
         </div>
 
-        {/* Big Tap Actions */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {/* Big Tap Actions: 1-touch Call, Text, Email */}
+        <div className={`grid ${lead.email ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2"} gap-3`}>
           <a
             href={`tel:${lead.phone}`}
+            aria-label={`Call ${lead.name}`}
             className="flex flex-col items-center justify-center p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-600 hover:text-white transition shadow-sm font-semibold text-sm gap-1 active:scale-95"
           >
             <Phone className="w-5 h-5" />
@@ -194,27 +205,62 @@ export default function LeadDetailPage() {
 
           <a
             href={`sms:${lead.phone}`}
+            aria-label={`Text ${lead.name}`}
             className="flex flex-col items-center justify-center p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-800 hover:bg-blue-600 hover:text-white transition shadow-sm font-semibold text-sm gap-1 active:scale-95"
           >
             <MessageSquare className="w-5 h-5" />
             <span>Text</span>
           </a>
 
-          {lead.email ? (
+          {lead.email && (
             <a
               href={`mailto:${lead.email}`}
+              aria-label={`Email ${lead.name}`}
               className="col-span-2 sm:col-span-1 flex flex-col items-center justify-center p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 hover:bg-slate-800 hover:text-white transition shadow-sm font-semibold text-sm gap-1 active:scale-95"
             >
               <Mail className="w-5 h-5" />
               <span>Email</span>
             </a>
-          ) : (
-            <div className="col-span-2 sm:col-span-1 flex flex-col items-center justify-center p-3.5 rounded-xl bg-slate-50/50 border border-slate-200/50 text-slate-400 font-medium text-xs gap-1">
-              <Mail className="w-5 h-5 opacity-40" />
-              <span>No email provided</span>
-            </div>
           )}
         </div>
+
+        {/* Scheduled Appointment Card (if already booked) */}
+        {(() => {
+          const activeAppt = lead.appointments?.find((a) => a.status === "SCHEDULED");
+          if (!activeAppt) return null;
+
+          return (
+            <div className="p-4 rounded-xl bg-blue-50/80 border border-blue-200 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CalendarCheck2 className="w-5 h-5 text-blue-600" />
+                  <span className="text-sm font-bold text-blue-950">
+                    Appointment Scheduled
+                  </span>
+                </div>
+                <Link
+                  href="/appointments"
+                  className="text-xs font-bold text-blue-700 hover:text-blue-900 underline"
+                >
+                  View in Appointments
+                </Link>
+              </div>
+              <div className="text-xs text-slate-700 flex flex-wrap items-center gap-x-4 gap-y-1">
+                <span>
+                  When: <strong>{new Date(activeAppt.scheduledAt).toLocaleString()}</strong>
+                </span>
+                <span>
+                  Duration: <strong>{activeAppt.durationMinutes} min</strong>
+                </span>
+                {activeAppt.valueCents !== null && activeAppt.valueCents !== undefined && (
+                  <span>
+                    Booked Value: <strong>${activeAppt.valueCents / 100}</strong>
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Requested Service */}
         {lead.service ? (
@@ -281,14 +327,20 @@ export default function LeadDetailPage() {
 
         {/* Primary Booking & Lifecycle Bar */}
         <div className="pt-4 border-t border-slate-100 space-y-3">
-          {/* Prominent Book Appointment CTA */}
-          <button
-            onClick={() => setIsBookingOpen(true)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl font-extrabold text-sm bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/25 transition active:scale-[0.99]"
-          >
-            <CalendarPlus className="w-5 h-5" />
-            <span>Book Appointment</span>
-          </button>
+          {/* If NOT closed, show conversion action */}
+          {lead.status !== "CLOSED" && (
+            <button
+              onClick={() => setIsBookingOpen(true)}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl font-extrabold text-sm bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/25 transition active:scale-[0.99]"
+            >
+              <CalendarPlus className="w-5 h-5" />
+              <span>
+                {lead.appointments?.some((a) => a.status === "SCHEDULED")
+                  ? "Book Another Appointment"
+                  : "Book Appointment"}
+              </span>
+            </button>
+          )}
 
           <div className="flex flex-wrap items-center gap-3">
             {lead.status === "NEW" && (
@@ -296,7 +348,7 @@ export default function LeadDetailPage() {
                 <button
                   onClick={() => handleStatusTransition("CONTACTED")}
                   disabled={updating}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm bg-amber-500 hover:bg-amber-600 text-white shadow-md shadow-amber-500/20 transition disabled:opacity-50"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm bg-amber-500 hover:bg-amber-600 text-white shadow-sm transition disabled:opacity-50"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Mark Contacted</span>
@@ -304,9 +356,9 @@ export default function LeadDetailPage() {
                 <button
                   onClick={() => handleStatusTransition("CLOSED")}
                   disabled={updating}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm bg-slate-200 hover:bg-slate-300 text-slate-800 transition disabled:opacity-50"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition disabled:opacity-50"
                 >
-                  <XCircle className="w-4 h-4" />
+                  <XCircle className="w-4 h-4 text-slate-500" />
                   <span>Close Lead</span>
                 </button>
               </>
@@ -316,9 +368,9 @@ export default function LeadDetailPage() {
               <button
                 onClick={() => handleStatusTransition("CLOSED")}
                 disabled={updating}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm bg-slate-800 hover:bg-slate-900 text-white shadow-md transition disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition disabled:opacity-50"
               >
-                <XCircle className="w-4 h-4" />
+                <XCircle className="w-4 h-4 text-slate-500" />
                 <span>Close Lead</span>
               </button>
             )}
@@ -327,10 +379,10 @@ export default function LeadDetailPage() {
               <button
                 onClick={() => handleStatusTransition("CONTACTED")}
                 disabled={updating}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm bg-blue-600 hover:bg-blue-500 text-white shadow-md transition disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm bg-slate-800 hover:bg-slate-900 text-white shadow-sm transition disabled:opacity-50"
               >
                 <RotateCcw className="w-4 h-4" />
-                <span>Reopen Lead (Mark Contacted)</span>
+                <span>Reopen Lead</span>
               </button>
             )}
           </div>

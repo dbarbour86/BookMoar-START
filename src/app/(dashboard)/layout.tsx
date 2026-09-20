@@ -2,7 +2,8 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getBusinessProfile } from "@/modules/business";
 import Link from "next/link";
-import { LayoutDashboard, Inbox, CalendarCheck2, LogOut, Zap } from "lucide-react";
+import { LogOut, Zap } from "lucide-react";
+import { DesktopNav, MobileBottomNav } from "@/components/AppNav";
 
 export default async function DashboardLayout({
   children,
@@ -36,29 +37,7 @@ export default async function DashboardLayout({
           </Link>
 
           {/* Desktop Nav - Operational Focus: Dashboard, Leads, Appointments */}
-          <nav className="hidden md:flex items-center space-x-1 text-sm font-medium">
-            <Link
-              href="/dashboard"
-              className="px-3.5 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5"
-            >
-              <LayoutDashboard className="w-4 h-4" />
-              <span>Dashboard</span>
-            </Link>
-            <Link
-              href="/leads"
-              className="px-3.5 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5"
-            >
-              <Inbox className="w-4 h-4" />
-              <span>Leads</span>
-            </Link>
-            <Link
-              href="/appointments"
-              className="px-3.5 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5"
-            >
-              <CalendarCheck2 className="w-4 h-4" />
-              <span>Appointments</span>
-            </Link>
-          </nav>
+          <DesktopNav />
 
           {/* Sign Out */}
           <div className="flex items-center space-x-2">
@@ -81,30 +60,8 @@ export default async function DashboardLayout({
         {children}
       </main>
 
-      {/* Mobile Bottom Navigation Bar: Dashboard, Leads, Appointments */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-slate-900 border-t border-slate-800 px-4 py-2 flex justify-around items-center text-xs font-medium text-slate-400 shadow-lg">
-        <Link
-          href="/dashboard"
-          className="flex flex-col items-center py-1 px-4 text-slate-300 hover:text-white"
-        >
-          <LayoutDashboard className="w-5 h-5 mb-0.5" />
-          <span>Dashboard</span>
-        </Link>
-        <Link
-          href="/leads"
-          className="flex flex-col items-center py-1 px-4 text-slate-300 hover:text-white"
-        >
-          <Inbox className="w-5 h-5 mb-0.5" />
-          <span>Leads</span>
-        </Link>
-        <Link
-          href="/appointments"
-          className="flex flex-col items-center py-1 px-4 text-slate-300 hover:text-white"
-        >
-          <CalendarCheck2 className="w-5 h-5 mb-0.5" />
-          <span>Appointments</span>
-        </Link>
-      </nav>
+      {/* Mobile Bottom Navigation Bar */}
+      <MobileBottomNav />
     </div>
   );
 }

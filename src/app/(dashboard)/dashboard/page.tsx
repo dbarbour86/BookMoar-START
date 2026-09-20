@@ -194,59 +194,63 @@ export default function DashboardPage() {
         {/* Card 1: New Leads */}
         <Link
           href="/leads?status=new"
-          className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm hover:border-blue-400 hover:ring-2 hover:ring-blue-500/10 transition group"
+          className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-sm hover:border-blue-400 hover:ring-2 hover:ring-blue-500/10 transition group flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
               New Leads
             </span>
-            <div className="p-2 rounded-xl bg-blue-50 text-blue-600 group-hover:scale-110 transition">
+            <div className="p-2 rounded-xl bg-blue-50 text-blue-600 group-hover:scale-105 transition">
               <Inbox className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline justify-between">
-            <span className="text-2xl sm:text-3xl font-black text-slate-900">
-              {newLeads}
-            </span>
-            {newLeads > 0 && (
-              <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md animate-pulse">
-                Action needed
+          <div className="mt-3">
+            <div className="flex items-baseline justify-between">
+              <span className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+                {newLeads}
               </span>
-            )}
+              {newLeads > 0 && (
+                <span className="text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full">
+                  Action needed
+                </span>
+              )}
+            </div>
+            <span className="text-[11px] font-medium text-slate-400 mt-1 block">
+              Uncontacted opportunities
+            </span>
           </div>
-          <span className="text-[11px] text-slate-400 mt-1 block">
-            Uncontacted opportunities
-          </span>
         </Link>
 
         {/* Card 2: Today's Appointments */}
         <Link
           href="/appointments"
-          className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm hover:border-blue-400 hover:ring-2 hover:ring-blue-500/10 transition group"
+          className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-sm hover:border-blue-400 hover:ring-2 hover:ring-blue-500/10 transition group flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
               Today&apos;s Schedule
             </span>
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-110 transition">
+            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-105 transition">
               <CalendarCheck2 className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline justify-between">
-            <span className="text-2xl sm:text-3xl font-black text-slate-900">
-              {todaysAppointmentsCount}
-            </span>
-            <span className="text-xs font-semibold text-slate-500">
-              scheduled
+          <div className="mt-3">
+            <div className="flex items-baseline justify-between">
+              <span className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+                {todaysAppointmentsCount}
+              </span>
+              <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                remaining
+              </span>
+            </div>
+            <span className="text-[11px] font-medium text-slate-400 mt-1 block">
+              Scheduled work today
             </span>
           </div>
-          <span className="text-[11px] text-slate-400 mt-1 block">
-            Remaining work today
-          </span>
         </Link>
 
         {/* Card 3: Booked Value — Today */}
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
+        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
               Booked Value
@@ -255,21 +259,23 @@ export default function DashboardPage() {
               <DollarSign className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline justify-between">
-            <span className="text-2xl sm:text-3xl font-black text-indigo-950">
-              {bookedTodayDollars}
-            </span>
-            <span className="text-xs font-semibold text-slate-400">
-              Today
+          <div className="mt-3">
+            <div className="flex items-baseline justify-between">
+              <span className="text-3xl sm:text-4xl font-black text-indigo-950 tracking-tight">
+                {bookedTodayDollars}
+              </span>
+              <span className="text-xs font-bold text-indigo-800 bg-indigo-50 px-2 py-0.5 rounded-md">
+                Today
+              </span>
+            </div>
+            <span className="text-[11px] font-medium text-slate-400 mt-1 block">
+              Scheduled &amp; completed work
             </span>
           </div>
-          <span className="text-[11px] text-slate-400 mt-1 block">
-            Scheduled & completed work
-          </span>
         </div>
 
         {/* Card 4: Booked This Week */}
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
+        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
               Booked This Week
@@ -278,22 +284,24 @@ export default function DashboardPage() {
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline justify-between">
-            <span className="text-2xl sm:text-3xl font-black text-violet-950">
-              {bookedWeekDollars}
-            </span>
-            <span className="text-xs font-semibold text-slate-400">
-              Week
+          <div className="mt-3">
+            <div className="flex items-baseline justify-between">
+              <span className="text-3xl sm:text-4xl font-black text-violet-950 tracking-tight">
+                {bookedWeekDollars}
+              </span>
+              <span className="text-xs font-bold text-violet-800 bg-violet-50 px-2 py-0.5 rounded-md">
+                Week
+              </span>
+            </div>
+            <span className="text-[11px] font-medium text-slate-400 mt-1 block">
+              Active jobs this week
             </span>
           </div>
-          <span className="text-[11px] text-slate-400 mt-1 block">
-            Total active jobs this week
-          </span>
         </div>
       </div>
 
       {/* Section 1: Today's Appointments Operational List */}
-      <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4">
+      <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/90 shadow-sm space-y-4">
         <div className="flex items-center justify-between pb-2 border-b border-slate-100">
           <div className="flex items-center gap-2">
             <Calendar className="w-5 h-5 text-blue-600" />
@@ -303,7 +311,7 @@ export default function DashboardPage() {
           </div>
           <Link
             href="/appointments"
-            className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+            className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 p-1"
           >
             <span>All Appointments</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -311,126 +319,180 @@ export default function DashboardPage() {
         </div>
 
         {data?.todaysAppointments.length === 0 ? (
-          <div className="text-center py-8 text-slate-400 text-sm">
+          <div className="text-center py-10 px-4 text-slate-400 text-sm bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
             No appointments scheduled for today.
           </div>
         ) : (
           <div className="space-y-3">
-            {data?.todaysAppointments.map((appt) => {
-              const isCompleted = appt.status === "COMPLETED";
-              const isNoShow = appt.status === "NO_SHOW";
-              const isScheduled = appt.status === "SCHEDULED";
+            {(() => {
+              const firstScheduledId = data?.todaysAppointments.find(
+                (a) => a.status === "SCHEDULED"
+              )?.id;
 
-              return (
-                <div
-                  key={appt.id}
-                  className={`p-4 rounded-xl border transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-                    isCompleted
-                      ? "bg-slate-50/80 border-slate-200 text-slate-600"
-                      : isNoShow
-                      ? "bg-rose-50/50 border-rose-200 text-rose-800"
-                      : "bg-white border-blue-200 shadow-sm"
-                  }`}
-                >
-                  {/* Left info */}
-                  <div className="flex items-start gap-3">
-                    <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-blue-50 text-blue-900 border border-blue-100 min-w-[70px]">
-                      <Clock className="w-3.5 h-3.5 text-blue-600 mb-0.5" />
-                      <span className="text-xs font-extrabold">
-                        {formatTime(appt.scheduledAt, data.businessTimezone)}
-                      </span>
+              return data?.todaysAppointments.map((appt) => {
+                const isCompleted = appt.status === "COMPLETED";
+                const isNoShow = appt.status === "NO_SHOW";
+                const isScheduled = appt.status === "SCHEDULED";
+                const isUpNext = appt.id === firstScheduledId;
+
+                return (
+                  <div
+                    key={appt.id}
+                    className={`p-4 rounded-xl border transition flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 ${
+                      isUpNext
+                        ? "bg-blue-50/40 border-blue-400 ring-2 ring-blue-500/20 shadow-sm"
+                        : isCompleted
+                        ? "bg-slate-50/60 border-slate-200 text-slate-600"
+                        : isNoShow
+                        ? "bg-rose-50/40 border-rose-200 text-rose-800"
+                        : "bg-white border-slate-200/90 shadow-sm"
+                    }`}
+                  >
+                    {/* Left info */}
+                    <div className="flex items-start gap-3 flex-1 min-w-0">
+                      <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-blue-50 text-blue-900 border border-blue-100 min-w-[68px] shrink-0">
+                        <Clock className="w-3.5 h-3.5 text-blue-600 mb-0.5" />
+                        <span className="text-xs font-black">
+                          {formatTime(appt.scheduledAt, data.businessTimezone)}
+                        </span>
+                      </div>
+
+                      <div className="space-y-1 min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-base font-bold text-slate-900 truncate">
+                            {appt.customerName}
+                          </span>
+
+                          {/* Up Next Badge */}
+                          {isUpNext && (
+                            <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-600 text-white">
+                              Up Next
+                            </span>
+                          )}
+
+                          {/* Status Badge */}
+                          <span
+                            className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
+                              isCompleted
+                                ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                                : isNoShow
+                                ? "bg-rose-100 text-rose-800 border border-rose-300"
+                                : !isUpNext
+                                ? "bg-slate-100 text-slate-700 border border-slate-200"
+                                : "hidden"
+                            }`}
+                          >
+                            {appt.status}
+                          </span>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+                          <span className="font-semibold text-slate-700">
+                            {appt.customerPhone}
+                          </span>
+                          {appt.serviceName && (
+                            <span className="text-blue-700 font-semibold bg-blue-50 px-2 py-0.5 rounded">
+                              {appt.serviceName}
+                            </span>
+                          )}
+                          {appt.valueCents !== null && appt.valueCents !== undefined && (
+                            <span className="font-bold text-slate-900">
+                              ${appt.valueCents / 100}
+                            </span>
+                          )}
+                        </div>
+
+                        {appt.notes && (
+                          <p className="text-xs text-slate-500 italic mt-0.5 line-clamp-2">
+                            &quot;{appt.notes}&quot;
+                          </p>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-base font-bold text-slate-900">
-                          {appt.customerName}
-                        </span>
-                        {/* Status Badge */}
-                        <span
-                          className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
-                            isCompleted
-                              ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
-                              : isNoShow
-                              ? "bg-rose-100 text-rose-800 border border-rose-300"
-                              : "bg-blue-600 text-white"
-                          }`}
-                        >
-                          {appt.status}
-                        </span>
-                      </div>
+                    {/* Right actions */}
+                    <div className="flex items-center gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 justify-end shrink-0">
+                      {/* SCHEDULED actions: Call | Text | Complete | No Show */}
+                      {isScheduled && (
+                        <>
+                          <a
+                            href={`tel:${appt.customerPhone}`}
+                            aria-label={`Call ${appt.customerName}`}
+                            title="Call Customer"
+                            className="flex items-center justify-center h-10 w-10 sm:h-9 sm:w-9 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white transition shadow-sm border border-emerald-200"
+                          >
+                            <Phone className="w-4 h-4" />
+                          </a>
+                          <a
+                            href={`sms:${appt.customerPhone}`}
+                            aria-label={`Text ${appt.customerName}`}
+                            title="Text Customer"
+                            className="flex items-center justify-center h-10 w-10 sm:h-9 sm:w-9 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white transition shadow-sm border border-blue-200"
+                          >
+                            <MessageSquare className="w-4 h-4" />
+                          </a>
+                          <button
+                            onClick={(e) => handleAppointmentOutcome(appt.id, "COMPLETED", e)}
+                            title="Mark Completed"
+                            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition shadow-sm active:scale-95"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span>Complete</span>
+                          </button>
+                          <button
+                            onClick={(e) => handleAppointmentOutcome(appt.id, "NO_SHOW", e)}
+                            title="Mark No Show"
+                            className="flex items-center gap-1 px-2.5 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
+                          >
+                            <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+                            <span>No Show</span>
+                          </button>
+                        </>
+                      )}
 
-                      <div className="flex flex-wrap items-center gap-x-3 text-xs text-slate-500">
-                        <span className="font-semibold text-slate-700">
-                          {appt.customerPhone}
-                        </span>
-                        {appt.serviceName && (
-                          <span className="text-blue-700 font-semibold bg-blue-50 px-2 py-0.5 rounded">
-                            {appt.serviceName}
+                      {/* NO_SHOW actions: Call | Text */}
+                      {isNoShow && (
+                        <>
+                          <span className="text-xs text-rose-700 font-medium mr-1">
+                            Follow up:
                           </span>
-                        )}
-                        {appt.valueCents !== null && appt.valueCents !== undefined && (
-                          <span className="font-bold text-slate-900">
-                            ${appt.valueCents / 100}
-                          </span>
-                        )}
-                      </div>
+                          <a
+                            href={`tel:${appt.customerPhone}`}
+                            aria-label={`Call ${appt.customerName}`}
+                            title="Call Customer"
+                            className="flex items-center justify-center h-10 w-10 sm:h-9 sm:w-9 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white transition shadow-sm border border-emerald-200"
+                          >
+                            <Phone className="w-4 h-4" />
+                          </a>
+                          <a
+                            href={`sms:${appt.customerPhone}`}
+                            aria-label={`Text ${appt.customerName}`}
+                            title="Text Customer"
+                            className="flex items-center justify-center h-10 w-10 sm:h-9 sm:w-9 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white transition shadow-sm border border-blue-200"
+                          >
+                            <MessageSquare className="w-4 h-4" />
+                          </a>
+                        </>
+                      )}
 
-                      {appt.notes && (
-                        <p className="text-xs text-slate-500 italic mt-0.5">
-                          &quot;{appt.notes}&quot;
-                        </p>
+                      {/* COMPLETED: visually settled */}
+                      {isCompleted && (
+                        <span className="text-xs font-semibold text-emerald-700 flex items-center gap-1 py-1 px-2.5 rounded-lg bg-emerald-50 border border-emerald-100">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>Finished</span>
+                        </span>
                       )}
                     </div>
                   </div>
-
-                  {/* Right actions */}
-                  <div className="flex items-center gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 justify-end">
-                    <a
-                      href={`tel:${appt.customerPhone}`}
-                      title="Call"
-                      className="p-2 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white transition shadow-sm border border-emerald-200"
-                    >
-                      <Phone className="w-4 h-4" />
-                    </a>
-                    <a
-                      href={`sms:${appt.customerPhone}`}
-                      title="Text"
-                      className="p-2 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white transition shadow-sm border border-blue-200"
-                    >
-                      <MessageSquare className="w-4 h-4" />
-                    </a>
-
-                    {isScheduled && (
-                      <>
-                        <button
-                          onClick={(e) => handleAppointmentOutcome(appt.id, "COMPLETED", e)}
-                          title="Mark Completed"
-                          className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition shadow-sm"
-                        >
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                          <span>Complete</span>
-                        </button>
-                        <button
-                          onClick={(e) => handleAppointmentOutcome(appt.id, "NO_SHOW", e)}
-                          title="Mark No Show"
-                          className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
-                        >
-                          <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
-                          <span>No Show</span>
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+                );
+              });
+            })()}
           </div>
         )}
       </div>
 
       {/* Section 2: Recent NEW Leads */}
-      <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4">
+      <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/90 shadow-sm space-y-4">
         <div className="flex items-center justify-between pb-2 border-b border-slate-100">
           <div className="flex items-center gap-2">
             <Inbox className="w-5 h-5 text-blue-600" />
@@ -445,7 +507,7 @@ export default function DashboardPage() {
           </div>
           <Link
             href="/leads"
-            className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+            className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 p-1"
           >
             <span>View All Leads</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -453,39 +515,39 @@ export default function DashboardPage() {
         </div>
 
         {data?.recentNewLeads.length === 0 ? (
-          <div className="text-center py-8 text-slate-400 text-sm">
-            No new uncontacted leads. All caught up!
+          <div className="text-center py-10 px-4 text-slate-400 text-sm bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+            You&apos;re caught up — no new leads need attention.
           </div>
         ) : (
           <div className="space-y-3">
             {data?.recentNewLeads.map((lead) => (
               <div
                 key={lead.id}
-                className="p-4 rounded-xl border border-blue-300 ring-2 ring-blue-500/10 bg-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                className="p-4 rounded-xl border border-blue-200/80 bg-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3.5"
               >
-                <div className="space-y-1">
+                <div className="space-y-1 flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-600 text-white">
+                    <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-600 text-white">
                       NEW
                     </span>
                     <Link
                       href={`/leads/${lead.id}`}
-                      className="text-base font-bold text-slate-900 hover:text-blue-600 transition"
+                      className="text-base font-bold text-slate-900 hover:text-blue-600 transition truncate"
                     >
                       {lead.name}
                     </Link>
-                    <span className="text-xs text-slate-400 font-medium ml-1">
+                    <span className="text-xs text-slate-400 font-medium ml-1 shrink-0">
                       {formatRelativeTime(lead.createdAt)}
                     </span>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-x-3 text-xs text-slate-600">
-                    <span className="font-semibold">{lead.phone}</span>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600">
+                    <span className="font-semibold text-slate-800">{lead.phone}</span>
                     {lead.service && (
                       <span className="text-blue-700 font-semibold bg-blue-50 px-2 py-0.5 rounded">
                         {lead.service.name}
                         {lead.service.defaultPriceCents !== null && lead.service.defaultPriceCents !== undefined && (
-                          <span className="ml-1 text-blue-900">
+                          <span className="ml-1 text-blue-900 font-bold">
                             (${lead.service.defaultPriceCents / 100})
                           </span>
                         )}
@@ -500,18 +562,20 @@ export default function DashboardPage() {
                   )}
                 </div>
 
-                <div className="flex items-center gap-2 justify-end pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                <div className="flex items-center gap-2 justify-end pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 shrink-0">
                   <a
                     href={`tel:${lead.phone}`}
-                    title="Call"
-                    className="p-2 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white transition shadow-sm border border-emerald-200"
+                    aria-label={`Call ${lead.name}`}
+                    title="Call Customer"
+                    className="flex items-center justify-center h-10 w-10 sm:h-9 sm:w-9 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white transition shadow-sm border border-emerald-200"
                   >
                     <Phone className="w-4 h-4" />
                   </a>
                   <a
                     href={`sms:${lead.phone}`}
-                    title="Text"
-                    className="p-2 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white transition shadow-sm border border-blue-200"
+                    aria-label={`Text ${lead.name}`}
+                    title="Text Customer"
+                    className="flex items-center justify-center h-10 w-10 sm:h-9 sm:w-9 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white transition shadow-sm border border-blue-200"
                   >
                     <MessageSquare className="w-4 h-4" />
                   </a>
@@ -529,7 +593,7 @@ export default function DashboardPage() {
                         },
                       })
                     }
-                    className="flex items-center gap-1 px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition shadow-md shadow-blue-600/20 active:scale-95"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition shadow-md shadow-blue-600/20 active:scale-95"
                   >
                     <CalendarPlus className="w-3.5 h-3.5" />
                     <span>Book Appointment</span>
