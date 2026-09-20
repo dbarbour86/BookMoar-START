@@ -22,6 +22,7 @@ import {
   CalendarCheck2,
 } from "lucide-react";
 import BookAppointmentModal from "@/components/BookAppointmentModal";
+import { formatDuration } from "@/lib/duration";
 
 interface LeadDetailData {
   id: string;
@@ -250,7 +251,7 @@ export default function LeadDetailPage() {
                   When: <strong>{new Date(activeAppt.scheduledAt).toLocaleString()}</strong>
                 </span>
                 <span>
-                  Duration: <strong>{activeAppt.durationMinutes} min</strong>
+                  Duration: <strong>{formatDuration(activeAppt.durationMinutes)}</strong>
                 </span>
                 {activeAppt.valueCents !== null && activeAppt.valueCents !== undefined && (
                   <span>

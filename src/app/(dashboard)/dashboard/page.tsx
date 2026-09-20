@@ -17,9 +17,10 @@ import {
   CalendarCheck2,
   CalendarPlus,
   RefreshCw,
-  AlertTriangle
+  AlertTriangle,
 } from "lucide-react";
 import BookAppointmentModal, { BookAppointmentModalProps } from "@/components/BookAppointmentModal";
+import { formatDuration } from "@/lib/duration";
 
 interface TodayAppointmentItem {
   id: string;
@@ -350,10 +351,13 @@ export default function DashboardPage() {
                   >
                     {/* Left info */}
                     <div className="flex items-start gap-3 flex-1 min-w-0">
-                      <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-blue-50 text-blue-900 border border-blue-100 min-w-[68px] shrink-0">
+                      <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-blue-50 text-blue-900 border border-blue-100 min-w-[68px] shrink-0 text-center">
                         <Clock className="w-3.5 h-3.5 text-blue-600 mb-0.5" />
                         <span className="text-xs font-black">
                           {formatTime(appt.scheduledAt, data.businessTimezone)}
+                        </span>
+                        <span className="text-[10px] text-blue-600 font-medium">
+                          {formatDuration(appt.durationMinutes)}
                         </span>
                       </div>
 
