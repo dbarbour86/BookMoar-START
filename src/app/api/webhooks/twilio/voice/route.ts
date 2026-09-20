@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { generateInboundVoiceTwiml } from "@/modules/missed-call";
+import { isTwilioWebhookAuthentic, reconstructWebhookUrl } from "@/lib/twilio";
 
 /**
  * Twilio Inbound Voice Webhook
@@ -8,8 +9,24 @@ import { generateInboundVoiceTwiml } from "@/modules/missed-call";
  */
 export async function POST(req: Request) {
   try {
-    const url = new URL(req.url);
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `${url.protocol}//${url.host}`;
+    const contentType = req.headers.get("content-type") || "";
+    const paramsMap: Record<string, string> = {};
+    if (contentType.includes("application/x-www-form-urlencoded")) {
+      const formData = await req.formData();
+      formData.forEach((value, key) => {
+        paramsMap[key] = value.toString();
+      });
+    }
+
+    const signature = req.headers.get("x-twilio-signature");
+    const fullUrl = reconstructWebhookUrl(req, "/api/webhooks/twilio/voice");
+
+    if (!isTwilioWebhookAuthentic(fullUrl, paramsMap, signature)) {
+      console.warn("[TwilioWebhook] Rejected voice webhook with invalid signature");
+      return new NextResponse("Unauthorized Twilio Signature", { status: 403 });
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || new URL(fullUrl).origin;
     const twiml = await generateInboundVoiceTwiml(baseUrl);
 
     return new NextResponse(twiml, {

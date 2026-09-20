@@ -194,17 +194,23 @@ export async function processDialActionCallback(payload: TwilioVoiceWebhookPaylo
     console.log(`[MissedCall] Created new MISSED_CALL lead: ${targetLeadId}`);
   }
 
-  // 4. Send Recovery SMS
-  const business = await getBusinessProfile();
-  const smsTemplate = business.missedCallTextTemplate || "Hey! Sorry we missed your call. How can we help?";
-
+  // 4. Send Recovery SMS (if enabled)
+  const recoveryEnabled = process.env.TWILIO_RECOVERY_SMS_ENABLED !== "false";
   let smsSent = false;
-  try {
-    const provider = getSmsProvider();
-    const smsResult = await provider.sendSms(From, smsTemplate);
-    smsSent = smsResult.success;
-  } catch (smsError) {
-    console.error("[MissedCall] Failed to send recovery SMS:", smsError);
+
+  if (recoveryEnabled) {
+    const business = await getBusinessProfile();
+    const smsTemplate = business.missedCallTextTemplate || "Hey! Sorry we missed your call. How can we help?";
+
+    try {
+      const provider = getSmsProvider();
+      const smsResult = await provider.sendSms(From, smsTemplate);
+      smsSent = smsResult.success;
+    } catch (smsError) {
+      console.error("[MissedCall] Failed to send recovery SMS:", smsError);
+    }
+  } else {
+    console.log("[MissedCall] Recovery SMS disabled via TWILIO_RECOVERY_SMS_ENABLED=false");
   }
 
   // 5. Record CallWebhookEvent for idempotency

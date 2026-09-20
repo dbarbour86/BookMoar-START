@@ -100,7 +100,9 @@ If using Docker:
 docker run --name bookmoar-db -e POSTGRES_USER=bookmoar -e POSTGRES_PASSWORD=bookmoar_password -e POSTGRES_DB=bookmoar_db -p 5432:5432 -d postgres:16-alpine
 ```
 
-### 4. Deploy Migrations & Seed Database
+### 4. Deploy Migrations & Initialize Database
+
+#### For Local Development & Demos:
 ```bash
 # Generate Prisma Client
 npm run prisma:generate
@@ -108,8 +110,22 @@ npm run prisma:generate
 # Deploy versioned migrations to PostgreSQL
 npm run prisma:deploy
 
-# Seed development database with sample business & leads
+# Seed development database with sample business & demo leads (REFUSES in production)
 npm run seed
+```
+
+#### For Real Client Production Deployment:
+```bash
+# Deploy versioned migrations
+npm run prisma:deploy
+
+# Provision client business profile and owner account safely (non-destructive)
+npm run init:client -- \
+  --business "Apex Auto Detail" \
+  --email "owner@apexdetail.com" \
+  --password "SecureClientPassword123!" \
+  --phone "+19195550100" \
+  --timezone "America/New_York"
 ```
 
 ### 5. Run Development Server
@@ -120,13 +136,16 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## 5. Development Credentials & Test Tools
+## 5. Deployment Modes & Security Architecture
 
-- **Owner Portal Login**: [http://localhost:3000/login](http://localhost:3000/login)
-  - **Email**: `owner@apexdetail.com`
-  - **Password**: `Password123!`
-- **Public Lead Intake Test Form**: [http://localhost:3000/test-lead](http://localhost:3000/test-lead)
-  - Submits inquiries directly through `POST /api/leads`.
+### Production Security & Environment Variables
+- `AUTH_SECRET`: Required in production. Fails closed (throws error) if missing.
+- `ENABLE_INTERNAL_SETUP`: Set to `"true"` during initial onboarding to access `/services` and `/business`. Set to `"false"` (or omit) in normal client production.
+- `TWILIO_AUTH_TOKEN` & `NEXT_PUBLIC_APP_URL`: Required for Twilio webhook HMAC-SHA1 signature verification. Webhooks without valid signatures return 403 Forbidden in production.
+
+### Development-Only Tools
+- **Dev Seed Login**: Only displayed on login screen in development (`NODE_ENV === "development"`).
+- **Public Lead Intake Test Form**: [http://localhost:3000/test-lead](http://localhost:3000/test-lead) (Returns 404 in production).
 
 ---
 

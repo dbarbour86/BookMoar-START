@@ -4,6 +4,13 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
+  if (process.env.NODE_ENV === "production") {
+    console.error("❌ REFUSING TO RUN DEMO SEED IN PRODUCTION!");
+    console.error("prisma/seed.ts contains destructive deleteMany() operations and demo data.");
+    console.error("To initialize a real client deployment safely, run: npm run init:client");
+    process.exit(1);
+  }
+
   console.log("🌱 Seeding Book Moar START development data...");
 
   // Clean existing data for single-client idempotent seed

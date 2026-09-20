@@ -6,8 +6,16 @@ import { db } from "./db";
 const COOKIE_NAME = "bookmoar_session";
 const SESSION_DURATION = 60 * 60 * 24 * 7; // 7 days in seconds
 
-function getSecretKey(): Uint8Array {
-  const secret = process.env.AUTH_SECRET || "dev-insecure-secret-key-change-in-production-at-least-32-chars-long";
+export function getSecretKey(): Uint8Array {
+  const secret = process.env.AUTH_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error(
+        "FATAL: AUTH_SECRET environment variable is missing in production. Generate a secure 32+ character secret (e.g. openssl rand -base64 32) and set it in your environment."
+      );
+    }
+    return new TextEncoder().encode("dev-insecure-secret-key-change-in-production-at-least-32-chars-long");
+  }
   return new TextEncoder().encode(secret);
 }
 

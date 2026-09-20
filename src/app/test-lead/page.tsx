@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { Zap, Send, CheckCircle2, AlertCircle, ArrowLeft, Loader2 } from "lucide-react";
 
 interface ServiceItem {
@@ -11,6 +12,9 @@ interface ServiceItem {
 }
 
 export default function TestLeadPage() {
+  if (process.env.NODE_ENV === "production") {
+    notFound();
+  }
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [loadingServices, setLoadingServices] = useState(true);
   const [submitting, setSubmitting] = useState(false);

@@ -130,11 +130,13 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-xs text-slate-500">
-              Dev Seed Login: <code className="text-slate-400">owner@apexdetail.com</code> / <code className="text-slate-400">Password123!</code>
-            </p>
-          </div>
+          {process.env.NODE_ENV === "development" && (
+            <div className="mt-6 text-center">
+              <p className="text-xs text-slate-500">
+                Dev Seed Login: <code className="text-slate-400">owner@apexdetail.com</code> / <code className="text-slate-400">Password123!</code>
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

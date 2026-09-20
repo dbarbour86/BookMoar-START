@@ -3,6 +3,8 @@ import { getBusinessProfile, updateBusinessProfile, updateBusinessSchema } from 
 import { getCurrentUser } from "@/lib/auth";
 import { handleApiError, jsonError } from "@/lib/errors";
 
+import { isInternalSetupEnabled } from "@/lib/setup";
+
 /**
  * GET /api/business
  */
@@ -28,6 +30,10 @@ export async function PATCH(req: Request) {
     const user = await getCurrentUser();
     if (!user || user.role !== "OWNER") {
       return jsonError("Unauthorized", 401);
+    }
+
+    if (!isInternalSetupEnabled()) {
+      return jsonError("Internal setup mode is disabled", 403);
     }
 
     const body = await req.json();

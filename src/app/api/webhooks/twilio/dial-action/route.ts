@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { processDialActionCallback, TwilioVoiceWebhookPayload } from "@/modules/missed-call";
+import { isTwilioWebhookAuthentic, reconstructWebhookUrl } from "@/lib/twilio";
 
 /**
  * Twilio Dial Action Callback Webhook
@@ -9,20 +10,35 @@ import { processDialActionCallback, TwilioVoiceWebhookPayload } from "@/modules/
 export async function POST(req: Request) {
   try {
     let payload: Partial<TwilioVoiceWebhookPayload> = {};
+    const paramsMap: Record<string, string> = {};
 
     const contentType = req.headers.get("content-type") || "";
     if (contentType.includes("application/x-www-form-urlencoded")) {
       const formData = await req.formData();
+      formData.forEach((value, key) => {
+        paramsMap[key] = value.toString();
+      });
       payload = {
-        CallSid: formData.get("CallSid")?.toString() || "",
-        From: formData.get("From")?.toString() || "",
-        To: formData.get("To")?.toString() || "",
-        CallStatus: formData.get("CallStatus")?.toString() || "",
-        DialCallStatus: formData.get("DialCallStatus")?.toString() || "",
-        DialCallDuration: formData.get("DialCallDuration")?.toString() || "",
+        CallSid: paramsMap.CallSid || "",
+        From: paramsMap.From || "",
+        To: paramsMap.To || "",
+        CallStatus: paramsMap.CallStatus || "",
+        DialCallStatus: paramsMap.DialCallStatus || "",
+        DialCallDuration: paramsMap.DialCallDuration || "",
       };
     } else {
       payload = await req.json();
+      Object.entries(payload).forEach(([k, v]) => {
+        if (v !== undefined && v !== null) paramsMap[k] = String(v);
+      });
+    }
+
+    const signature = req.headers.get("x-twilio-signature");
+    const fullUrl = reconstructWebhookUrl(req, "/api/webhooks/twilio/dial-action");
+
+    if (!isTwilioWebhookAuthentic(fullUrl, paramsMap, signature)) {
+      console.warn("[TwilioWebhook] Rejected dial-action webhook with invalid signature");
+      return new NextResponse("Unauthorized Twilio Signature", { status: 403 });
     }
 
     const result = await processDialActionCallback(payload as TwilioVoiceWebhookPayload);

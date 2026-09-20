@@ -20,15 +20,21 @@ export async function GET() {
   }
 }
 
+import { isInternalSetupEnabled } from "@/lib/setup";
+
 /**
  * POST /api/services
- * Authenticated owner creates new service
+ * Authenticated owner creates new service (requires internal setup mode)
  */
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser();
     if (!user || user.role !== "OWNER") {
       return jsonError("Unauthorized", 401);
+    }
+
+    if (!isInternalSetupEnabled()) {
+      return jsonError("Internal setup mode is disabled", 403);
     }
 
     const body = await req.json();
