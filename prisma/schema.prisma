@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LeadSource {
+  WEBSITE
+  MANUAL
+  MISSED_CALL
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  CLOSED
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELED
+  NO_SHOW
+}
+
+model Business {
+  id                     String   @id @default(cuid())
+  name                   String
+  phone                  String
+  email                  String
+  timezone               String   @default("America/New_York")
+  websiteUrl             String?
+  logoUrl                String?
+  address                String?
+  notificationPhone      String
+  notificationEmail      String?
+  missedCallTextTemplate String   @default("Hey! Sorry we missed your call. How can we help?")
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("OWNER")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Service {
+  id                String        @id @default(cuid())
+  name              String
+  description       String?
+  defaultPriceCents Int?
+  active            Boolean       @default(true)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  leads             Lead[]
+  appointments      Appointment[]
+}
+
+model Lead {
+  id              String        @id @default(cuid())
+  name            String
+  phone           String
+  normalizedPhone String
+  email           String?
+  message         String?
+  serviceId       String?
+  service         Service?      @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  source          LeadSource
+  status          LeadStatus    @default(NEW)
+  contactedAt     DateTime?
+  closedAt        DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  appointments    Appointment[]
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([normalizedPhone])
+}
+
+model Appointment {
+  id              String            @id @default(cuid())
+  leadId          String?
+  lead            Lead?             @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  customerName    String
+  customerPhone   String
+  customerEmail   String?
+  serviceId       String?
+  service         Service?          @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  serviceName     String?
+  scheduledAt     DateTime
+  durationMinutes Int               @default(60)
+  valueCents      Int?
+  status          AppointmentStatus @default(SCHEDULED)
+  notes           String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([scheduledAt])
+  @@index([status])
+  @@index([leadId])
+}
+
+model CallWebhookEvent {
+  id             String   @id @default(cuid())
+  callSid        String   @unique
+  from           String
+  callStatus     String
+  dialCallStatus String?
+  processed      Boolean  @default(false)
+  leadId         String?
+  smsSent        Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([callSid])
+  @@index([from])
+}
+
